@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _counter = 0;
   int a = 1;
-
+  int b = 50;
   @override
   void initState() {
     super.initState();
@@ -33,6 +33,8 @@ class _HomePageState extends State<HomePage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _counter = (prefs.getInt('counter') ?? 0);
+      a = (prefs.getInt('a') ?? 0);
+      b = (prefs.getInt('b') ?? 0);
     });
   }
 
@@ -41,14 +43,46 @@ class _HomePageState extends State<HomePage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       prefs.setInt('counter', _counter);
+      prefs.setInt('a', a);
+      prefs.setInt('b', b);
+    });
+  }
+
+  increa(int i) async {
+    setState(() {
+      if (i == a) {
+        print('it A');
+        i++;
+      }
+      if (i == b) {
+        print('it B');
+        i++;
+      }
+      _saveCounter();
     });
   }
 
   void _increase() {
     setState(() {
       _counter++;
+      print('plus counter');
       _saveCounter();
     });
+  }
+
+  String _test(int a) {
+    return (a * 100).toString();
+  }
+
+  void _set(int a) {
+    print('hi Iam $a');
+  }
+
+  void increase() {
+    setState(() {
+      b++;
+    });
+    print('$b is working');
   }
 
   @override
@@ -62,13 +96,32 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FlatButton(
-              onPressed: () async {
+              onPressed: () {
                 _increase();
               },
               child: Text('$_counter'),
               color: Colors.grey,
             ),
-            FlatButton(onPressed: () {}, child: Text('$a'))
+            Text(_test(_counter)),
+            FlatButton(
+                onPressed: () {
+                  setState(() {
+                    a++;
+                  });
+                },
+                child: Text('$a')),
+            FlatButton(
+                onPressed: () {
+                  setState(() {
+                    b++;
+                  });
+                },
+                child: Text('$b')),
+            FloatingActionButton(
+                child: Text('save'),
+                onPressed: () {
+                  _saveCounter();
+                })
           ],
         ),
       ),
