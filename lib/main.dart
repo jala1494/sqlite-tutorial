@@ -4,9 +4,6 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
-
-import 'package:example/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +13,44 @@ void main() {
   )));
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _counter = 0;
+  int a = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCounter();
+  }
+
+  _loadCounter() async {
+    print('_load');
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _counter = (prefs.getInt('counter') ?? 0);
+    });
+  }
+
+  _saveCounter() async {
+    print('saveCounter');
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setInt('counter', _counter);
+    });
+  }
+
+  void _increase() {
+    setState(() {
+      _counter++;
+      _saveCounter();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,41 +63,12 @@ class HomePage extends StatelessWidget {
           children: <Widget>[
             FlatButton(
               onPressed: () async {
-                int i = await DatabaseHelper.instance
-                    .insert({DatabaseHelper.columnName: 'Saheb'});
-                print('the inserted id is $i');
+                _increase();
               },
-              child: Text('insert'),
+              child: Text('$_counter'),
               color: Colors.grey,
             ),
-            FlatButton(
-              onPressed: () async {
-                List<Map<String, dynamic>> queryRows =
-                    await DatabaseHelper.instance.queryAll();
-                print(queryRows);
-              },
-              child: Text('query'),
-              color: Colors.green,
-            ),
-            FlatButton(
-              onPressed: () async {
-                int updatedId = await DatabaseHelper.instance.update({
-                  DatabaseHelper.columnId: 12,
-                  DatabaseHelper.columnName: 'Mark'
-                });
-                print(updatedId);
-              },
-              child: Text('update'),
-              color: Colors.blue,
-            ),
-            FlatButton(
-              onPressed: () async {
-                int rowsEffected = await DatabaseHelper.instance.delete();
-                print(rowsEffected);
-              },
-              child: Text('delete'),
-              color: Colors.red,
-            ),
+            FlatButton(onPressed: () {}, child: Text('$a'))
           ],
         ),
       ),
